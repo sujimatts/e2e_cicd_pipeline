@@ -18,12 +18,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Set up JDK 17
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
+      # # Set up JDK 17
+      # - name: Set up JDK 17
+      #   uses: actions/setup-java@v4
+      #   with:
+      #     distribution: 'temurin'
+      #     java-version: '17'
 
       # Build project with Maven
       - name: Build with Maven
@@ -31,7 +31,7 @@ jobs:
 
       # Build Docker image
       - name: Build Docker image
-        run: docker build -t hello-world-java:${{ github.sha }} .
+        run: docker build -t hello-world-java:latest .
 
       # Login to DockerHub
       - name: DockerHub Login
@@ -39,7 +39,7 @@ jobs:
 
       # Push Docker image
       - name: Push Docker image
-        run: docker push hello-world-java:${{ github.sha }}
+        run: docker push hello-world-java:latest
 
       # Deploy using Helm
       - name: Helm Upgrade or Install
