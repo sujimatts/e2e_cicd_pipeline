@@ -45,5 +45,5 @@ jobs:
       - name: Helm Upgrade or Install
         run: |
           helm upgrade hello-world-java ./helm-hello-world-java
-            --wait
+    
 
