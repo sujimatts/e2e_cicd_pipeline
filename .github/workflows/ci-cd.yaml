@@ -28,7 +28,7 @@ jobs:
 
       # Build Docker image with tag = commit SHA
       - name: Build Docker image
-        run: docker build -t $IMAGE_NAME:$IMAGE_TAG .
+        run: docker build -t ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} .
 
       # DockerHub Login
       - name: DockerHub Login
@@ -36,7 +36,7 @@ jobs:
 
       # Push Docker image
       - name: Push Docker image
-        run: docker push $IMAGE_NAME:$IMAGE_TAG
+        run: docker push ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
 
       # Checkout GitOps repo
       - name: Checkout GitOps repo
@@ -50,7 +50,7 @@ jobs:
       # Update image tag in values.yaml
       - name: Update image tag in values.yaml
         run: |
-          sed -i "s/tag: .*/tag: \"$IMAGE_TAG\"/" gitops-repo/app1/values.yaml
+          sed -i 's/tag: .*/tag: "${{ env.IMAGE_TAG }}"/' gitops-repo/app1/values.yaml
 
       # Commit and push changes
       - name: Commit and push changes
@@ -58,10 +58,10 @@ jobs:
           cd gitops-repo
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git checkout -b update-image-${IMAGE_TAG}
+          git checkout -b update-image-${{ env.IMAGE_TAG }}
           git add app1/values.yaml
-          git commit -m "Update image tag to $IMAGE_TAG"
-          git push origin update-image-${IMAGE_TAG}
+          git commit -m "Update image tag to ${{ env.IMAGE_TAG }}"
+          git push origin update-image-${{ env.IMAGE_TAG }}
 
       # Create Pull Request
       - name: Create Pull Request
@@ -75,4 +75,3 @@ jobs:
             This PR updates the Docker image tag in `app1/values.yaml` to `${{ env.IMAGE_TAG }}`.
           base: main
           branch: update-image-${{ env.IMAGE_TAG }}
-
