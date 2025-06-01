@@ -84,10 +84,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
         run: |
-          echo $GITHUB_TOKEN | gh auth login --with-token
           gh pr create \
             --title "Update image tag to ${{ env.IMAGE_TAG }}" \
             --body "This PR updates the Docker image tag in app1/values.yaml to ${{ env.IMAGE_TAG }}." \
             --head update-image-${{ env.IMAGE_TAG }} \
             --base main \
             --repo sujimatts/gitops-repo
+
