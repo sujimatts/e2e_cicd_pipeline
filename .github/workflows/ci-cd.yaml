@@ -47,10 +47,11 @@ jobs:
           path: gitops-repo
           ref: main
 
-      # Update image tag in values.yaml
       - name: Update image tag in values.yaml
         run: |
-          sed -i 's/tag: .*/tag: "${{ env.IMAGE_TAG }}"/' gitops-repo/app1/values.yaml
+          sed -i 's/^\s*tag:.*$/  tag: "'$IMAGE_TAG'"/' gitops-repo/app1/values.yaml
+          cat gitops-repo/app1/values.yaml
+
 
       # Commit and push changes
       - name: Commit and push changes
