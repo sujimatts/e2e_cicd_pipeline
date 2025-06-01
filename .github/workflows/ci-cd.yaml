@@ -10,37 +10,68 @@ env:
   IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/hello-world-java
 
 jobs:
-  build-and-deploy:
+  build-deploy-pr:
     runs-on: self-hosted
 
     steps:
-      # Checkout code
-      - name: Checkout code
+      # Checkout source code
+      - name: Checkout source
         uses: actions/checkout@v4
 
-      # Set IMAGE_TAG to short SHA of commit
+      # Set IMAGE_TAG to short commit SHA
       - name: Set IMAGE_TAG
         run: echo "IMAGE_TAG=${GITHUB_SHA::7}" >> $GITHUB_ENV
 
-      # Build project with Maven
+      # Build with Maven
       - name: Build with Maven
         run: mvn clean package --batch-mode
 
-      # Build Docker image with dynamic tag
+      # Build Docker image with tag = commit SHA
       - name: Build Docker image
         run: docker build -t $IMAGE_NAME:$IMAGE_TAG .
 
-      # Login to DockerHub
+      # DockerHub Login
       - name: DockerHub Login
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-      # Push Docker image with dynamic tag
+      # Push Docker image
       - name: Push Docker image
         run: docker push $IMAGE_NAME:$IMAGE_TAG
 
-      # Deploy using Helm with dynamic image tag
-      - name: Helm Upgrade or Install
+      # Checkout GitOps repo
+      - name: Checkout GitOps repo
+        uses: actions/checkout@v4
+        with:
+          repository: sujimatts/gitops-repo
+          token: ${{ secrets.GH_PAT }}
+          path: gitops-repo
+          ref: main
+
+      # Update image tag in values.yaml
+      - name: Update image tag in values.yaml
         run: |
-          helm upgrade --install hello-world-java ./helm-hello-world-java \
-            --set image.repository=$IMAGE_NAME \
-            --set image.tag=$IMAGE_TAG
+          sed -i "s/tag: .*/tag: \"$IMAGE_TAG\"/" gitops-repo/app1/values.yaml
+
+      # Commit and push changes
+      - name: Commit and push changes
+        run: |
+          cd gitops-repo
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -b update-image-${IMAGE_TAG}
+          git add app1/values.yaml
+          git commit -m "Update image tag to $IMAGE_TAG"
+          git push origin update-image-${IMAGE_TAG}
+
+      # Create Pull Request
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GH_PAT }}
+          path: gitops-repo
+          commit-message: Update image tag to $IMAGE_TAG
+          title: "[AutoPR] Update image tag to $IMAGE_TAG"
+          body: |
+            This PR updates the Docker image tag in `app1/values.yaml` to `${IMAGE_TAG}`.
+          base: main
+          branch: update-image-${IMAGE_TAG}
