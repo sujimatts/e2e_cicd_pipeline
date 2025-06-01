@@ -47,22 +47,27 @@ jobs:
           path: gitops-repo
           ref: main
 
-      - name: Update image tag in values.yaml
-        run: |
-          sed -i 's/^\s*tag:.*$/  tag: "'$IMAGE_TAG'"/' gitops-repo/app1/values.yaml
-          cat gitops-repo/app1/values.yaml
-
-
-      # Commit and push changes
-      - name: Commit and push changes
+      # Create and checkout new branch
+      - name: Create and checkout new branch
         run: |
           cd gitops-repo
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git checkout -b update-image-${{ env.IMAGE_TAG }}
+
+      # Update image tag in values.yaml on new branch
+      - name: Update image tag in values.yaml
+        run: |
+          sed -i 's/^\s*tag:.*$/  tag: "'${{ env.IMAGE_TAG }}'"/' gitops-repo/app1/values.yaml
+          cat gitops-repo/app1/values.yaml
+
+      # Commit and push changes on new branch
+      - name: Commit and push changes
+        run: |
+          cd gitops-repo
           git add app1/values.yaml
           git commit -m "Update image tag to ${{ env.IMAGE_TAG }}"
-          git push origin update-image-${{ env.IMAGE_TAG }}
+          git push --set-upstream origin update-image-${{ env.IMAGE_TAG }}
 
       # Create Pull Request
       - name: Create Pull Request
