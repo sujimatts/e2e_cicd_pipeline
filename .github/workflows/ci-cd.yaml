@@ -58,13 +58,14 @@ jobs:
       # Update image tag in values.yaml on new branch
       - name: Update image tag in values.yaml
         run: |
-          sed -i 's/^\s*tag:.*$/  tag: "'${{ env.IMAGE_TAG }}'"/' gitops-repo/app1/values.yaml
-          cat gitops-repo/app1/values.yaml
+          sed -i 's/^\s*tag:.*$/  tag: "'${{ env.IMAGE_TAG }}'"/' app1/values.yaml
+          cat app1/values.yaml
 
       # Commit and push changes on new branch
       - name: Commit and push changes
         run: |
           cd gitops-repo
+          git status
           git add app1/values.yaml
           git commit -m "Update image tag to ${{ env.IMAGE_TAG }}"
           git push --set-upstream origin update-image-${{ env.IMAGE_TAG }}
