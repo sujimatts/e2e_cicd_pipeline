@@ -66,15 +66,15 @@ jobs:
           git commit -m "Update image tag to ${{ env.IMAGE_TAG }}"
           git push --set-upstream origin update-image-${{ env.IMAGE_TAG }}
 
-      # Create Pull Request
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v6
-        with:
-          token: ${{ secrets.GH_PAT }}
-          path: gitops-repo
-          commit-message: Update image tag to ${{ env.IMAGE_TAG }}
-          title: "[AutoPR] Update image tag to ${{ env.IMAGE_TAG }}"
-          body: |
-            This PR updates the Docker image tag in `app1/values.yaml` to `${{ env.IMAGE_TAG }}`.
-          base: main
-          branch: update-image-${{ env.IMAGE_TAG }}
+      # # Create Pull Request
+      # - name: Create Pull Request
+      #   uses: peter-evans/create-pull-request@v6
+      #   with:
+      #     token: ${{ secrets.GH_PAT }}
+      #     path: gitops-repo
+      #     commit-message: Update image tag to ${{ env.IMAGE_TAG }}
+      #     title: "[AutoPR] Update image tag to ${{ env.IMAGE_TAG }}"
+      #     body: |
+      #       This PR updates the Docker image tag in `app1/values.yaml` to `${{ env.IMAGE_TAG }}`.
+      #     base: main
+      #     branch: update-image-${{ env.IMAGE_TAG }}
