@@ -69,9 +69,10 @@ jobs:
         with:
           token: ${{ secrets.GH_PAT }}
           path: gitops-repo
-          commit-message: Update image tag to $IMAGE_TAG
-          title: "[AutoPR] Update image tag to $IMAGE_TAG"
+          commit-message: Update image tag to ${{ env.IMAGE_TAG }}
+          title: "[AutoPR] Update image tag to ${{ env.IMAGE_TAG }}"
           body: |
-            This PR updates the Docker image tag in `app1/values.yaml` to `${IMAGE_TAG}`.
+            This PR updates the Docker image tag in `app1/values.yaml` to `${{ env.IMAGE_TAG }}`.
           base: main
-          branch: update-image-${IMAGE_TAG}
+          branch: update-image-${{ env.IMAGE_TAG }}
+
