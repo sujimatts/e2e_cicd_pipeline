@@ -59,7 +59,10 @@ jobs:
           sed -i 's/^\s*tag:.*$/  tag: "'${{ env.IMAGE_TAG }}'"/' app1/values.yaml
           cat app1/values.yaml
 
+          git status
+
           git add app1/values.yaml
+          git status
           git commit -m "Update image tag to ${{ env.IMAGE_TAG }}"
           git push --set-upstream origin update-image-${{ env.IMAGE_TAG }}
 
