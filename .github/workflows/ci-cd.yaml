@@ -56,7 +56,7 @@ jobs:
 
           git checkout -b update-image-${{ env.IMAGE_TAG }}
 
-          sed -i 's/^\s*tag:.*$/  tag: "'${{ env.IMAGE_TAG }}'"/' app1/values.yaml
+          sed -i 's/^\s*tag:.*$/  tag: "'${{ env.IMAGE_TAG }}'"/' applications/app1/values.yaml
           cat applications/app1/values.yaml
 
           git status
